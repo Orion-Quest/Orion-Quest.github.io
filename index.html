@@ -1,17 +1,1084 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>我的 GitHub 网站</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orion-Quest | Exploration Log</title>
+  <meta
+    name="description"
+    content="Orion-Quest 的探索型个人主页：OpenCV 学习、项目实践、路线记录与持续成长。"
+  />
+  <style>
+    :root {
+      --bg-1: #050b14;
+      --bg-2: #0b1323;
+      --bg-3: #101a30;
+      --panel: rgba(255, 255, 255, 0.06);
+      --panel-strong: rgba(255, 255, 255, 0.1);
+      --line: rgba(255, 255, 255, 0.12);
+      --text: #eef4ff;
+      --muted: #aab8cf;
+      --brand: #7dd3fc;
+      --brand-2: #a78bfa;
+      --brand-3: #34d399;
+      --brand-4: #f472b6;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      --glow: 0 0 40px rgba(125, 211, 252, 0.18);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --maxw: 1180px;
+      --nav-h: 72px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.75;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(125, 211, 252, 0.12), transparent 24%),
+        radial-gradient(circle at 86% 14%, rgba(167, 139, 250, 0.12), transparent 22%),
+        radial-gradient(circle at 50% 120%, rgba(52, 211, 153, 0.08), transparent 28%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star-layer {
+      position: absolute;
+      inset: 0;
+      background-repeat: repeat;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      opacity: 0.8;
+    }
+
+    .star-layer.layer-1 {
+      background-image:
+        radial-gradient(2px 2px at 10% 18%, rgba(255,255,255,0.65), transparent 55%),
+        radial-gradient(2px 2px at 24% 72%, rgba(255,255,255,0.55), transparent 55%),
+        radial-gradient(2px 2px at 68% 28%, rgba(255,255,255,0.5), transparent 55%),
+        radial-gradient(2px 2px at 86% 64%, rgba(255,255,255,0.58), transparent 55%),
+        radial-gradient(2px 2px at 54% 84%, rgba(255,255,255,0.42), transparent 55%);
+      animation-name: driftDown;
+      animation-duration: 120s;
+    }
+
+    .star-layer.layer-2 {
+      background-image:
+        radial-gradient(1.5px 1.5px at 16% 32%, rgba(125,211,252,0.55), transparent 55%),
+        radial-gradient(1.5px 1.5px at 34% 56%, rgba(255,255,255,0.45), transparent 55%),
+        radial-gradient(1.5px 1.5px at 58% 18%, rgba(167,139,250,0.5), transparent 55%),
+        radial-gradient(1.5px 1.5px at 76% 44%, rgba(255,255,255,0.36), transparent 55%),
+        radial-gradient(1.5px 1.5px at 90% 80%, rgba(52,211,153,0.38), transparent 55%);
+      animation-name: driftUp;
+      animation-duration: 180s;
+      opacity: 0.55;
+    }
+
+    .star-layer.layer-3 {
+      background-image:
+        radial-gradient(3px 3px at 22% 20%, rgba(125,211,252,0.38), transparent 60%),
+        radial-gradient(3px 3px at 72% 12%, rgba(167,139,250,0.3), transparent 60%),
+        radial-gradient(3px 3px at 48% 68%, rgba(52,211,153,0.26), transparent 60%);
+      animation-name: pulseGlow;
+      animation-duration: 9s;
+      animation-direction: alternate;
+      opacity: 0.55;
+    }
+
+    @keyframes driftDown {
+      from { transform: translateY(0); }
+      to { transform: translateY(40px); }
+    }
+
+    @keyframes driftUp {
+      from { transform: translateY(0); }
+      to { transform: translateY(-32px); }
+    }
+
+    @keyframes pulseGlow {
+      from { opacity: 0.28; }
+      to { opacity: 0.7; }
+    }
+
+    .container {
+      width: min(var(--maxw), calc(100% - 32px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: rgba(5, 11, 20, 0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+    }
+
+    .nav {
+      width: min(var(--maxw), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      position: relative;
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95), transparent 18%),
+        linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: var(--glow);
+    }
+
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-link {
+      position: relative;
+      padding: 8px 12px;
+      border-radius: 999px;
+      transition: 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(125,211,252,0.18), rgba(167,139,250,0.16));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 24px rgba(125, 211, 252, 0.12);
+    }
+
+    .hero {
+      padding: 96px 0 56px;
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.18fr 0.92fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-main {
+      padding: 42px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::before {
+      content: "";
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      right: -180px;
+      top: -220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(125, 211, 252, 0.16), transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(125, 211, 252, 0.12);
+      border: 1px solid rgba(125, 211, 252, 0.26);
+      color: #d9f3ff;
+      font-size: 0.92rem;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand);
+      box-shadow: 0 0 14px rgba(125, 211, 252, 0.7);
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2.5rem, 4.8vw, 4.8rem);
+      line-height: 1.03;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p.lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.06rem;
+      max-width: 62ch;
+    }
+
+    .cta-row {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 18px;
+      border-radius: 14px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: 0.22s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #08131f;
+      box-shadow: 0 10px 28px rgba(125, 211, 252, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.04);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.12);
+      color: #edf5ff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-2px);
+    }
+
+    .hero-side {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .star-map {
+      flex: 1;
+      min-height: 280px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(circle at 24% 28%, rgba(125,211,252,0.24), transparent 18%),
+        radial-gradient(circle at 78% 24%, rgba(167,139,250,0.22), transparent 20%),
+        radial-gradient(circle at 56% 72%, rgba(52,211,153,0.18), transparent 18%),
+        rgba(255,255,255,0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .orbit, .node, .path-line {
+      position: absolute;
+    }
+
+    .orbit {
+      border: 1px dashed rgba(255,255,255,0.12);
+      border-radius: 50%;
+      animation: slowRotate 20s linear infinite;
+      transform-origin: center;
+    }
+
+    .orbit.one {
+      width: 220px;
+      height: 220px;
+      left: 34px;
+      top: 16px;
+    }
+
+    .orbit.two {
+      width: 180px;
+      height: 180px;
+      right: 26px;
+      top: 44px;
+      animation-duration: 25s;
+      animation-direction: reverse;
+    }
+
+    .orbit.three {
+      width: 260px;
+      height: 260px;
+      left: 94px;
+      bottom: -84px;
+      animation-duration: 32s;
+    }
+
+    .path-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.24), transparent);
+      transform-origin: left center;
+    }
+
+    .path-a {
+      width: 180px;
+      left: 70px;
+      top: 98px;
+      transform: rotate(24deg);
+    }
+
+    .path-b {
+      width: 156px;
+      right: 84px;
+      top: 130px;
+      transform: rotate(-28deg);
+    }
+
+    .path-c {
+      width: 210px;
+      left: 120px;
+      bottom: 76px;
+      transform: rotate(-8deg);
+    }
+
+    .node {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      box-shadow: 0 0 18px rgba(255,255,255,0.35);
+      animation: twinkle 3s ease-in-out infinite;
+    }
+
+    .node.blue { background: var(--brand); }
+    .node.purple { background: var(--brand-2); }
+    .node.green { background: var(--brand-3); }
+
+    .node.n1 { left: 82px; top: 76px; animation-delay: 0s; }
+    .node.n2 { left: 192px; top: 126px; animation-delay: 0.4s; }
+    .node.n3 { right: 84px; top: 110px; animation-delay: 0.8s; }
+    .node.n4 { right: 142px; top: 196px; animation-delay: 1.1s; }
+    .node.n5 { left: 228px; bottom: 72px; animation-delay: 1.4s; }
+    .node.n6 { left: 124px; bottom: 52px; animation-delay: 1.8s; }
+
+    @keyframes slowRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.25); opacity: 1; }
+    }
+
+    .status-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(125,211,252,0.08), rgba(167,139,250,0.08));
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #d9e9ff;
+    }
+
+    .status-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    section {
+      padding: 18px 0 42px;
+      position: relative;
+      z-index: 1;
+      scroll-margin-top: calc(var(--nav-h) + 18px);
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 1.7rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-desc {
+      margin: 0 0 22px;
+      color: var(--muted);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 1.14rem;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      color: #deebff;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .project-card {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .project-shot {
+      aspect-ratio: 16 / 10;
+      position: relative;
+      background:
+        linear-gradient(135deg, rgba(125,211,252,0.14), rgba(167,139,250,0.1)),
+        rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shot-label {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(5,11,20,0.65);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.82rem;
+      color: #dce8ff;
+    }
+
+    .shot-placeholder {
+      width: calc(100% - 40px);
+      height: calc(100% - 40px);
+      border-radius: 18px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      text-align: center;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 22% 22%, rgba(125,211,252,0.08), transparent 18%),
+        radial-gradient(circle at 78% 74%, rgba(167,139,250,0.08), transparent 20%),
+        rgba(255,255,255,0.02);
+    }
+
+    .project-body {
+      padding: 22px;
+    }
+
+    .project-body h3 {
+      margin: 0 0 8px;
+      font-size: 1.18rem;
+    }
+
+    .project-body p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 8px;
+      padding-left: 28px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(125,211,252,0.45), rgba(167,139,250,0.2), rgba(52,211,153,0.35));
+      border-radius: 999px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 18px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      opacity: 0;
+      transform: translateY(28px);
+      transition: 0.7s ease;
+      transition-delay: var(--delay, 0s);
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -27px;
+      top: 22px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 0 18px rgba(125,211,252,0.28);
+    }
+
+    .timeline-item.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .timeline-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .timeline-item span {
+      color: var(--muted);
+    }
+
+    .link-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: 0.22s ease;
+    }
+
+    .link-item:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .link-item .meta {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    footer {
+      padding: 28px 0 56px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid,
+      .grid-3,
+      .grid-2,
+      .project-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 70px;
+      }
+
+      .hero-main,
+      .hero-side,
+      .panel {
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-wrap {
+        height: auto;
+        padding: 10px 0;
+      }
+
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        width: 100%;
+        gap: 8px;
+      }
+
+      .nav-link {
+        padding: 7px 10px;
+      }
+
+      h1 {
+        font-size: 2.6rem;
+      }
+
+      .cta-row {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .timeline {
+        padding-left: 24px;
+      }
+
+      .timeline-item::before {
+        left: -23px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>你好，我是 Orion-Quest</h1>
-  <p>我正在学习 OpenCV，并用 GitHub 记录学习过程。</p>
+  <div class="stars" aria-hidden="true">
+    <div class="star-layer layer-1"></div>
+    <div class="star-layer layer-2"></div>
+    <div class="star-layer layer-3"></div>
+  </div>
 
-  <h2>我的链接</h2>
-  <ul>
-    <li><a href="https://github.com/Orion-Quest">我的 GitHub 主页</a></li>
-    <li><a href="https://github.com/Orion-Quest/begining-learning-of-Opencv">我的 OpenCV 学习仓库</a></li>
-  </ul>
+  <div class="nav-wrap">
+    <div class="nav">
+      <a class="brand" href="#top">
+        <span class="brand-mark"></span>
+        <span>Orion-Quest</span>
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="#about">关于我</a>
+        <a class="nav-link" href="#constellation">探索坐标</a>
+        <a class="nav-link" href="#projects">项目截图</a>
+        <a class="nav-link" href="#route">时间线航迹</a>
+        <a class="nav-link" href="#links">链接</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="top">
+    <section class="hero" id="hero">
+      <div class="container hero-grid">
+        <div class="card hero-main">
+          <div class="eyebrow">Exploration Log · Dynamic Edition</div>
+          <h1>在代码、图像与未知之间，留下持续发光的航迹。</h1>
+          <p class="lead">
+            你好，我是 Orion-Quest。这里不只是一个主页，而是一份不断更新的探索记录。
+            我正在用 OpenCV、项目实践与系统化整理，把分散的技术点逐步连成一张可回望、可延展的星图。
+          </p>
+
+          <div class="cta-row">
+            <a
+              class="btn btn-primary"
+              href="https://github.com/Orion-Quest/begining-learning-of-Opencv"
+              target="_blank"
+              rel="noreferrer"
+            >
+              探索 OpenCV 学习仓库
+            </a>
+            <a
+              class="btn btn-secondary"
+              href="https://github.com/Orion-Quest"
+              target="_blank"
+              rel="noreferrer"
+            >
+              前往 GitHub
+            </a>
+          </div>
+        </div>
+
+        <div class="card hero-side">
+          <div class="star-map" aria-hidden="true">
+            <div class="orbit one"></div>
+            <div class="orbit two"></div>
+            <div class="orbit three"></div>
+
+            <div class="path-line path-a"></div>
+            <div class="path-line path-b"></div>
+            <div class="path-line path-c"></div>
+
+            <div class="node blue n1"></div>
+            <div class="node purple n2"></div>
+            <div class="node green n3"></div>
+            <div class="node blue n4"></div>
+            <div class="node purple n5"></div>
+            <div class="node green n6"></div>
+          </div>
+
+          <div class="status-card">
+            <strong>当前状态</strong>
+            正在从“理解 OpenCV API”逐步走向“构建更稳的视觉处理原型”，
+            重点放在流程设计、ROI 分析、多目标处理和工程结构感上。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <h2 class="section-title">关于我</h2>
+        <p class="section-desc">
+          我偏爱“探索”这个词。它意味着未完成，意味着继续前进，也意味着愿意留下轨迹。
+          这个主页，就是我学习、实践和生长的公开航海日志。
+        </p>
+
+        <div class="grid-3">
+          <div class="panel">
+            <h3>我在做什么</h3>
+            <p>
+              系统学习经典计算机视觉，从图像基础、颜色分割、轮廓与几何分析，
+              一步步走向 ROI 矫正、特征分析与多目标处理。
+            </p>
+          </div>
+
+          <div class="panel">
+            <h3>我如何学习</h3>
+            <p>
+              先用 lessons 拆开知识点，再用 notes 固化理解，最后用 tasks
+              把多个步骤拼成真正能运行的小型视觉流水线。
+            </p>
+          </div>
+
+          <div class="panel">
+            <h3>我想抵达哪里</h3>
+            <p>
+              从“会写几个 OpenCV demo”，走向“能设计一个清晰、稳定、可解释的视觉原型系统”。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="constellation">
+      <div class="container">
+        <h2 class="section-title">探索坐标</h2>
+        <p class="section-desc">
+          这些是我当前航线上的几个主要坐标点，也是我正在不断向更深处推进的方向。
+        </p>
+
+        <div class="grid-2">
+          <div class="panel">
+            <h3>已经走过的区域</h3>
+            <div class="tag-row">
+              <span class="tag">图像与视频读取</span>
+              <span class="tag">BGR / Gray / HSV</span>
+              <span class="tag">颜色分割</span>
+              <span class="tag">形态学处理</span>
+              <span class="tag">轮廓提取</span>
+              <span class="tag">几何分析</span>
+              <span class="tag">透视矫正</span>
+              <span class="tag">ROI 特征分析</span>
+              <span class="tag">多目标基础跟踪</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>正在逼近的区域</h3>
+            <div class="tag-row">
+              <span class="tag">检测鲁棒性</span>
+              <span class="tag">参数设计逻辑</span>
+              <span class="tag">调试可视化</span>
+              <span class="tag">特征稳定性</span>
+              <span class="tag">轨迹生命周期</span>
+              <span class="tag">模块化结构</span>
+              <span class="tag">更完整的视觉原型</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <h2 class="section-title">项目截图</h2>
+        <p class="section-desc">
+          这里预留了项目截图位。你后面只需要把真实图片放进仓库并替换路径，就能把主页从“概念展示”变成“成果展示”。
+        </p>
+
+        <div class="project-grid">
+          <article class="panel project-card">
+            <div class="project-shot">
+              <span class="shot-label">README_assets/task04_preview.png</span>
+              <div class="shot-placeholder">
+                <div>
+                  <strong>Task04 截图位</strong><br />
+                  放置 rectified ROI feature analyze 的运行截图
+                </div>
+              </div>
+            </div>
+            <div class="project-body">
+              <h3>Task04 · Rectified ROI Feature Analyze</h3>
+              <p>
+                展示 ROI 矫正后的结果图、区域划分、特征分析叠加图，适合放你最能体现“结构化分析”的画面。
+              </p>
+              <div class="tag-row">
+                <span class="tag">ROI</span>
+                <span class="tag">Rectification</span>
+                <span class="tag">Feature Info</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel project-card">
+            <div class="project-shot">
+              <span class="shot-label">README_assets/task05_preview.png</span>
+              <div class="shot-placeholder">
+                <div>
+                  <strong>Task05 截图位</strong><br />
+                  放置 multi-target tracking and decision 的运行截图
+                </div>
+              </div>
+            </div>
+            <div class="project-body">
+              <h3>Task05 · Multi Target Track And Decision</h3>
+              <p>
+                展示多目标检测框、track_id、轨迹关联和决策标签，适合放最有“系统感”的一张图。
+              </p>
+              <div class="tag-row">
+                <span class="tag">Tracking</span>
+                <span class="tag">Decision</span>
+                <span class="tag">Pipeline</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="route">
+      <div class="container">
+        <h2 class="section-title">时间线航迹</h2>
+        <p class="section-desc">
+          我把自己的学习过程理解成一条逐渐清晰的航线：每一段都不是终点，而是下一段的起点。
+        </p>
+
+        <div class="timeline">
+          <div class="timeline-item" style="--delay:0s;">
+            <strong>01 · 起点：图像与视频</strong>
+            <span>先学会读取、显示、绘制和处理帧，建立与视觉数据打交道的直觉。</span>
+          </div>
+
+          <div class="timeline-item" style="--delay:0.08s;">
+            <strong>02 · 识别轮廓：颜色空间与分割</strong>
+            <span>理解不同颜色表示方式，开始用 HSV 范围把目标从背景中拉出来。</span>
+          </div>
+
+          <div class="timeline-item" style="--delay:0.16s;">
+            <strong>03 · 清理噪声：预处理与形态学</strong>
+            <span>通过模糊、阈值、腐蚀、膨胀与开闭运算，让目标结构变得更清楚。</span>
+          </div>
+
+          <div class="timeline-item" style="--delay:0.24s;">
+            <strong>04 · 看见形状：轮廓与几何分析</strong>
+            <span>提取边界、面积、中心与旋转框，把“图像里的区域”转成“可描述的目标”。</span>
+          </div>
+
+          <div class="timeline-item" style="--delay:0.32s;">
+            <strong>05 · 拉直视角：ROI 矫正与标准化</strong>
+            <span>通过透视变换把目标区域归一化，为后续特征分析提供更稳定的输入。</span>
+          </div>
+
+          <div class="timeline-item" style="--delay:0.4s;">
+            <strong>06 · 进入时序：多目标与状态管理</strong>
+            <span>从单帧走向多帧，从检测结果走向连续轨迹，让流程开始拥有“时间感”。</span>
+          </div>
+
+          <div class="timeline-item" style="--delay:0.48s;">
+            <strong>07 · 下一段：更稳的视觉原型</strong>
+            <span>继续强化鲁棒性、参数设计、调试体系、轨迹一致性和更完整的工程结构。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="links">
+      <div class="container">
+        <h2 class="section-title">链接</h2>
+        <p class="section-desc">
+          如果你想沿着我的坐标继续往里看，可以从这里出发。
+        </p>
+
+        <div class="link-list">
+          <a
+            class="link-item"
+            href="https://github.com/Orion-Quest"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div>
+              <strong>GitHub 主页</strong>
+              <div class="meta">查看我的代码仓库、提交记录和更多探索入口</div>
+            </div>
+            <span>→</span>
+          </a>
+
+          <a
+            class="link-item"
+            href="https://github.com/Orion-Quest/begining-learning-of-Opencv"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div>
+              <strong>OpenCV 学习仓库</strong>
+              <div class="meta">从 lessons、notes 到 tasks 的完整成长主线</div>
+            </div>
+            <span>→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © 2026 Orion-Quest · Exploration never really ends.
+    </div>
+  </footer>
+
+  <script>
+    const sections = [...document.querySelectorAll("main section[id]")];
+    const navLinks = [...document.querySelectorAll(".nav-link")];
+    const timelineItems = document.querySelectorAll(".timeline-item");
+
+    const activateNav = () => {
+      const scrollY = window.scrollY + 140;
+      let currentId = "hero";
+
+      sections.forEach(section => {
+        if (scrollY >= section.offsetTop) {
+          currentId = section.id;
+        }
+      });
+
+      navLinks.forEach(link => {
+        const target = link.getAttribute("href").replace("#", "");
+        link.classList.toggle("active", target === currentId);
+      });
+    };
+
+    const timelineObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+          }
+        });
+      },
+      {
+        threshold: 0.15
+      }
+    );
+
+    timelineItems.forEach(item => timelineObserver.observe(item));
+
+    window.addEventListener("scroll", activateNav, { passive: true });
+    window.addEventListener("load", activateNav);
+    window.addEventListener("resize", activateNav);
+  </script>
 </body>
 </html>
